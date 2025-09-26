@@ -3,6 +3,7 @@ package com.my.jwt_test.config;
 import com.my.jwt_test.myjwt.JWTFilter;
 import com.my.jwt_test.myjwt.JWTUtil;
 import com.my.jwt_test.myjwt.LoginFilter;
+import com.my.jwt_test.oauth2.OAuth2SuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,11 +21,14 @@ public class SecurityConfig {
     //AuthenticationManager가 인자로 받을 AuthenticationConfiguraion 객체 생성자 주입
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
+    // OAuth2SuccessHandler 주입
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, OAuth2SuccessHandler oAuth2SuccessHandler) {
 
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
+        this.oAuth2SuccessHandler = oAuth2SuccessHandler;
     }
 
     //AuthenticationManager Bean 등록
@@ -66,6 +70,10 @@ public class SecurityConfig {
         http
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        http
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(oAuth2SuccessHandler));
         return http.build();
     }
 }
