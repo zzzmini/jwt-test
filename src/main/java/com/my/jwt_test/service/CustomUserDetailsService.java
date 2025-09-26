@@ -1,0 +1,30 @@
+package com.my.jwt_test.service;
+
+import com.my.jwt_test.dto.CustomUserDetails;
+import com.my.jwt_test.entity.UserEntity;
+import com.my.jwt_test.repository.UserRepository;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+@Service
+public class CustomUserDetailsService implements UserDetailsService {
+    private final UserRepository userRepository;
+
+    public CustomUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        UserEntity userData = userRepository.findByEmail(email);
+
+        if (userData != null) {
+            //UserDetails에 담아서 return하면 AutneticationManager가 검증 함
+            return new CustomUserDetails(userData);
+        }
+
+        return null;
+    }
+}
